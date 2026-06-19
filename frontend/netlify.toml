@@ -1,5 +1,7 @@
+[build]
+  publish = "dist/duranki-login/browser"
+
 [[redirects]]
-  from = "/api/*"
-  to = "https://inkolo-connect.up.railway.app/api/:splat"
+  from = "/*"
+  to = "/index.html"
   status = 200
-  force = true
