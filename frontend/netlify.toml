@@ -1,10 +1,13 @@
-[[redirects]]
-  from = "/api/*"
-  to = "https://athletic-youth-production-f6b8.up.railway.app/api/:splat"
-  status = 200
-  force = true
+[build]
+publish = "dist/duranki-login/browser"
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+from = "/api/*"
+to = "https://athletic-youth-production-f6b8.up.railway.app/api/:splat"
+status = 200
+force = true
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
