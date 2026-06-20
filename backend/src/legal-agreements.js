@@ -80,6 +80,7 @@ export function createAcceptanceEvidence({
   request
 }) {
   const document = getTermsDocument(serviceCode, planCode);
+
   return {
     id: randomUUID(),
     userId: String(user.id),
@@ -97,7 +98,10 @@ export function createAcceptanceEvidence({
     documentSnapshot: document.content,
     consentStatement:
       'I confirm that I have read, understood and agree to these Terms and Conditions.',
-    acceptedAt: new Date().toISOString(),
+    acceptedAt: new Date()
+      .toISOString()
+      .slice(0, 19)
+      .replace('T', ' '),
     ipAddress: request.ip || request.socket?.remoteAddress || null,
     userAgent: request.get('user-agent') ?? null
   };
