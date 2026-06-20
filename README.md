@@ -1,129 +1,221 @@
-<<<<<<< HEAD
-# Inkolo-connect
-Webapp
-=======
-# Inkolo Connect ID Login Module
+# Inkolo Connect
 
-A standalone authentication prototype using:
+Inkolo Connect is a community platform built with:
 
-- Angular and TypeScript for the frontend
-- Node.js and Express for the API
-- MariaDB/MySQL for persistence
-- JWT bearer tokens for authenticated API requests
+* Angular (Frontend)
+* Node.js + Express (Backend API)
+* MariaDB/MySQL (Database)
+* JWT Authentication
 
-The prototype authenticates a user using an ID number only. For production,
-add a second factor such as a password, one-time PIN, or platform SSO.
+---
 
-## 1. Create the database
+## Prerequisites
 
-Run `backend/database/001_create_users.sql` in MariaDB:
+* Node.js 18+
+* npm
+* MariaDB/MySQL
 
-```powershell
-mysql -u root -p < backend/database/001_create_users.sql
+---
+
+## Installation
+
+Install all dependencies:
+
+```bash
+npm run install:all
 ```
 
-## 2. Configure the API
+---
 
-Copy `backend/.env.example` to `backend/.env` and replace `ID_PEPPER` and
-`JWT_SECRET` with different long random values.
+## Database Setup
 
-## 3. Install dependencies
+Create the database and run the SQL scripts in order:
 
-```powershell
-npm.cmd run install:all
+```text
+backend/database/001_create_users.sql
+backend/database/002_add_membership.sql
+backend/database/003_create_service_subscriptions.sql
+backend/database/004_create_service_applications.sql
+backend/database/005_create_platform_tables.sql
+backend/database/006_create_legal_acceptances.sql
 ```
 
-If npm reports `UNABLE_TO_VERIFY_LEAF_SIGNATURE`, configure npm to trust your
-organization's root CA certificate instead of disabling SSL verification:
+Example:
 
-```powershell
-npm.cmd config set cafile "C:\path\to\organization-root-ca.pem"
+```bash
+mysql -u root -p your_database < backend/database/001_create_users.sql
 ```
 
-Ask your network or IT administrator for the correct PEM certificate path.
+---
 
-## 4. Add a test user
+## Environment Variables
 
-The default test ID is `9001015009087`:
+Copy:
 
-```powershell
-npm.cmd --prefix backend run seed
+```text
+backend/.env.example
 ```
 
-To use another numeric ID:
+to:
 
-```powershell
-npm.cmd --prefix backend run seed -- 1234567890
+```text
+backend/.env
 ```
 
-The raw ID number is not stored in the database. The API stores an HMAC hash
-and the final four digits for display.
+Update the following values:
 
-## 5. Run the module
+```env
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=inkolo_connect
 
-Start the API:
-
-```powershell
-npm.cmd run start:backend
+JWT_SECRET=your_secret_key
+ID_PEPPER=your_pepper_key
 ```
 
-In another terminal, start Angular:
+---
 
-```powershell
-npm.cmd run start:frontend
+## Seed a Test User
+
+```bash
+npm --prefix backend run seed
 ```
 
-Open `http://localhost:4200` and sign in with the seeded ID.
+Default ID Number:
 
-## API endpoints
+```text
+9001015009087
+```
 
-- `GET /api/health`
-- `POST /api/auth/login` with `{ "idNumber": "9001015009087" }`
-- `GET /api/auth/me` with `Authorization: Bearer <token>`
-# Inkolo Connect platform
+---
 
-## Local services
+## Running the Application
 
-- Angular frontend: `http://127.0.0.1:4200`
-- Node.js API: `http://127.0.0.1:3000`
-- Health check: `http://127.0.0.1:3000/api/health`
+### Start Backend
 
-The Angular development server proxies `/api` requests to the Node.js API.
+```bash
+npm run start:backend
+```
 
-## Persistent storage
+Backend URL:
 
-The API first attempts to connect to MariaDB using `backend/.env`. When MariaDB
-is unavailable and `ALLOW_DEMO_AUTH=true`, the platform uses the durable
-server-side file:
+```text
+http://localhost:3000
+```
 
-`backend/data/platform-store.json`
+Health Check:
 
-Unlike the original in-memory demo, this data survives backend restarts. It
-stores profiles, role assignments, churches, member communities, contacts,
-direct messages, wallets, referrals, marketplace listings, and job listings.
+```text
+http://localhost:3000/api/health
+```
 
-## MariaDB setup
+---
 
-Install and start MariaDB, create the configured database, then run the SQL
-files in `backend/database` in numeric order:
+### Start Frontend
 
-1. `001_create_users.sql`
-2. `002_add_membership.sql`
-3. `003_create_service_subscriptions.sql`
-4. `004_create_service_applications.sql`
-5. `005_create_platform_tables.sql`
+```bash
+npm run start:frontend
+```
 
-Update `backend/.env` with the MariaDB host, port, username, password, and
-database name before restarting the API.
+Frontend URL:
 
-## Community communication API
+```text
+http://localhost:4200
+```
 
-Authenticated members can:
+---
 
-- search members in their selected church community by name or telephone;
-- add community contacts;
-- read a one-to-one conversation;
-- send persistent direct messages.
+## Available Scripts
 
-The Angular My Community screen uses these API endpoints directly.
->>>>>>> 97ac217 (webapp)
+Install dependencies:
+
+```bash
+npm run install:all
+```
+
+Start backend:
+
+```bash
+npm run start:backend
+```
+
+Start frontend:
+
+```bash
+npm run start:frontend
+```
+
+Seed test user:
+
+```bash
+npm --prefix backend run seed
+```
+
+---
+
+## Authentication API
+
+### Login
+
+```http
+POST /api/auth/login
+```
+
+Request:
+
+```json
+{
+  "idNumber": "9001015009087"
+}
+```
+
+### Current User
+
+```http
+GET /api/auth/me
+```
+
+Header:
+
+```text
+Authorization: Bearer <token>
+```
+
+---
+
+## Core Features
+
+* User Authentication
+* Membership Management
+* Service Subscriptions
+* Legal Acceptance Tracking
+* Community Messaging
+* Referrals
+* Marketplace Listings
+* Job Listings
+* Wallet Services
+* Church Communities
+
+---
+
+## Development URLs
+
+Frontend:
+
+```text
+http://localhost:4200
+```
+
+Backend:
+
+```text
+http://localhost:3000
+```
+
+API Health:
+
+```text
+http://localhost:3000/api/health
+```
