@@ -36,7 +36,8 @@ interface LoginResponse {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = "https://athletic-youth-production-f6b8.up.railway.app";
+ private readonly apiUrl =
+  "https://athletic-youth-production-f6b8.up.railway.app/api";
   private readonly tokenKey = 'duranki_access_token';
   private inMemoryToken: string | null = null;
 
