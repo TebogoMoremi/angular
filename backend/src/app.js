@@ -473,12 +473,23 @@ export function createApp({ databaseAvailable = true } = {}) {
 
       if (databaseAvailable) {
         const [userRows] = await getPool().execute(
-          `SELECT id, first_name, last_name, email, id_number_last4
-             FROM users
-            WHERE id = ? AND status = 'active'
-            LIMIT 1`,
+          `SELECT id, first_name, last_name, email, id_number_last4, telephone_number
+     FROM users
+    WHERE id = ? AND status = 'active'
+    LIMIT 1`,
           [req.auth.sub],
         );
+
+        const dbUser = userRows[0];
+
+        acceptingUser = {
+          id: dbUser.id,
+          first_name: dbUser.first_name,
+          last_name: dbUser.last_name,
+          email: dbUser.email,
+          telephone_number: dbUser.telephone_number,
+        };
+
         acceptingUser = userRows[0];
         if (!acceptingUser) {
           return res.status(404).json({ message: "User not found." });

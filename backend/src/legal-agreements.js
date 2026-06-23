@@ -1,39 +1,39 @@
-import { createHash, randomUUID } from 'node:crypto';
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { updatePlatformState } from './platform-store.js';
+import { createHash, randomUUID } from "node:crypto";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { updatePlatformState } from "./platform-store.js";
 
 const moduleDirectory = path.dirname(fileURLToPath(import.meta.url));
-const publicDirectory = path.resolve(moduleDirectory, '../../frontend/public');
+const publicDirectory = path.resolve(moduleDirectory, "../../frontend/public");
 
 const serviceNames = {
-  'build-up-balance': 'Buy & Sell',
-  funeral: 'Funeral Services',
-  community: 'My Community',
-  referral: 'Referral Program',
-  'job-search': 'Job Search',
-  'vas-services': 'VAS Services',
-  eduu: 'EduU',
-  'vuma-fibre': 'Vuma Fibre',
-  'catch-a-ride': 'Catch a Ride',
-  kzncc: 'KZNCC Membership',
-  'keycha-properties': 'Keytcha Properties',
-  wallet: 'My Wallet'
+  "build-up-balance": "Buy & Sell",
+  funeral: "Funeral Services",
+  community: "My Community",
+  referral: "Referral Program",
+  "job-search": "Job Search",
+  "vas-services": "VAS Services",
+  eduu: "EduU",
+  "vuma-fibre": "Vuma Fibre",
+  "catch-a-ride": "Catch a Ride",
+  kzncc: "KZNCC Membership",
+  "keycha-properties": "Keytcha Properties",
+  wallet: "My Wallet",
 };
 
 const archivedDocuments = {
-  'build-up-balance': 'buy-sell-terms.html',
-  'catch-a-ride': 'catch-a-ride-terms.html',
-  funeral: 'funeral-services-terms.html',
-  community: 'my-community-terms.html',
-  'vas-services': 'vas-services-terms.html',
-  'keycha-properties': 'keytcha-properties-terms.html',
-  referral: 'referral-service-terms.html',
-  'job-search': 'job-search-terms.html',
-  eduu: 'eduu-service-terms.html',
-  wallet: 'wallet-terms.html',
-  kzncc: 'kzncc-service-terms.html'
+  "build-up-balance": "buy-sell-terms.html",
+  "catch-a-ride": "catch-a-ride-terms.html",
+  funeral: "funeral-services-terms.html",
+  community: "my-community-terms.html",
+  "vas-services": "vas-services-terms.html",
+  "keycha-properties": "keytcha-properties-terms.html",
+  referral: "referral-service-terms.html",
+  "job-search": "job-search-terms.html",
+  eduu: "eduu-service-terms.html",
+  wallet: "wallet-terms.html",
+  kzncc: "kzncc-service-terms.html",
 };
 
 function genericTerms(serviceCode, planCode) {
@@ -58,18 +58,18 @@ export function getTermsDocument(serviceCode, planCode) {
   let sourceFile = null;
   if (filename) {
     sourceFile = filename;
-    content = readFileSync(path.join(publicDirectory, filename), 'utf8');
+    content = readFileSync(path.join(publicDirectory, filename), "utf8");
   } else {
     content = genericTerms(serviceCode, planCode);
   }
-  const version = '1.0';
+  const version = "1.0";
   return {
     title: `${serviceNames[serviceCode] ?? serviceCode} Terms and Conditions`,
     version,
-    mimeType: 'text/html; charset=utf-8',
+    mimeType: "text/html; charset=utf-8",
     sourceFile,
     content,
-    sha256: createHash('sha256').update(content, 'utf8').digest('hex')
+    sha256: createHash("sha256").update(content, "utf8").digest("hex"),
   };
 }
 
@@ -79,13 +79,17 @@ export function createAcceptanceEvidence({
   planCode,
   request
 }) {
+  if (!user) {
+    throw new Error("User is required for acceptance evidence");
+  }
+
   const document = getTermsDocument(serviceCode, planCode);
 
   return {
     id: randomUUID(),
     userId: String(user.id),
     memberName: `${user.first_name ?? user.firstName} ${user.last_name ?? user.lastName}`,
-    memberTelephone: user.telephone_number ?? user.telephoneNumber ?? null,
+    memberTelephone: user.telephone_number,
     memberEmail: user.email ?? null,
     serviceCode,
     serviceName: serviceNames[serviceCode] ?? serviceCode,
