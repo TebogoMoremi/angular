@@ -1,7 +1,7 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
-import type { UserRole } from './core/services/role.service';
+import { Injectable, inject } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable, tap } from "rxjs";
+import type { UserRole } from "./core/services/role.service";
 
 export interface User {
   id: number;
@@ -9,7 +9,7 @@ export interface User {
   lastName: string;
   email: string | null;
   idNumberLast4: string;
-  membershipType: 'free' | 'paid' | null;
+  membershipType: "free" | "paid" | null;
   roles: UserRole[];
 }
 
@@ -18,13 +18,13 @@ export interface ServiceSubscription {
   planCode: string;
   planLabel: string;
   amountCents: number;
-  status: 'active' | 'cancelled';
+  status: "active" | "cancelled";
   subscribedAt: string;
 }
 
 export interface ServiceApplication {
   serviceCode: string;
-  status: 'submitted' | 'approved' | 'declined';
+  status: "submitted" | "approved" | "declined";
   submittedAt: string;
 }
 
@@ -33,24 +33,24 @@ interface LoginResponse {
   user: User;
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class AuthService {
   private readonly http = inject(HttpClient);
- private readonly apiUrl =
-  "https://athletic-youth-production-f6b8.up.railway.app/api";
-  private readonly tokenKey = 'duranki_access_token';
+  private readonly apiUrl =
+    "https://athletic-youth-production-f6b8.up.railway.app/api";
+  private readonly tokenKey = "duranki_access_token";
   private inMemoryToken: string | null = null;
 
   login(
     telephoneNumber: string,
     firstName: string,
-    lastName: string
+    lastName: string,
   ): Observable<LoginResponse> {
     return this.http
       .post<LoginResponse>(`${this.apiUrl}/auth/login`, {
         telephoneNumber,
         firstName,
-        lastName
+        lastName,
       })
       .pipe(tap(({ accessToken }) => this.storeToken(accessToken)));
   }
@@ -58,13 +58,13 @@ export class AuthService {
   register(
     telephoneNumber: string,
     firstName: string,
-    lastName: string
+    lastName: string,
   ): Observable<LoginResponse> {
     return this.http
       .post<LoginResponse>(`${this.apiUrl}/auth/register`, {
         telephoneNumber,
         firstName,
-        lastName
+        lastName,
       })
       .pipe(tap(({ accessToken }) => this.storeToken(accessToken)));
   }
@@ -80,15 +80,25 @@ export class AuthService {
   subscribeToService(
     serviceCode: string,
     planCode: string,
-    acceptedTerms: boolean
+    acceptedTerms: boolean,
   ): Observable<ServiceSubscription> {
-    return this.http.post<ServiceSubscription>(`${this.apiUrl}/subscriptions`, {
+    const body = {
       serviceCode,
       planCode,
       acceptance: {
-        accepted: acceptedTerms
-      }
-    });
+        accepted: acceptedTerms,
+      },
+    };
+
+    return this.http.post<ServiceSubscription>(
+      `${this.apiUrl}/subscriptions`,
+      body,
+      {
+        headers: {
+          Authorization: `Bearer ${this.getToken()}`,
+        },
+      },
+    );
   }
 
   resetServiceSubscriptions(): Observable<void> {
@@ -97,15 +107,15 @@ export class AuthService {
 
   applyForStepUpBoost(
     bankConfirmation: File,
-    idDocument: File
+    idDocument: File,
   ): Observable<ServiceApplication> {
     const formData = new FormData();
-    formData.append('bankConfirmation', bankConfirmation);
-    formData.append('idDocument', idDocument);
+    formData.append("bankConfirmation", bankConfirmation);
+    formData.append("idDocument", idDocument);
 
     return this.http.post<ServiceApplication>(
       `${this.apiUrl}/applications/step-up-boost`,
-      formData
+      formData,
     );
   }
 
@@ -115,7 +125,10 @@ export class AuthService {
     }
 
     try {
-      return sessionStorage.getItem(this.tokenKey) || localStorage.getItem(this.tokenKey);
+      return (
+        sessionStorage.getItem(this.tokenKey) ||
+        localStorage.getItem(this.tokenKey)
+      );
     } catch {
       try {
         return localStorage.getItem(this.tokenKey);
