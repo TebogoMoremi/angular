@@ -3,14 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 export type UserRole =
-
   | 'Member'
   | 'Pastor'
   | 'Bishop'
-  | 'Service Provider Admin'
+  | 'Admin User'
   | 'KZNCC User'
   | 'KZNCC Admin'
-  | 'Admin User'
+  | 'Service Provider Admin'
   | 'Service Provider User';
 
 export interface RoleMenuItem {
