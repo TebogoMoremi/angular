@@ -367,12 +367,24 @@ export function createApp({ databaseAvailable = true } = {}) {
         if (databaseAvailable) {
           const [rows] = await getPool().execute(
             `SELECT id, first_name, last_name, email, status, membership_type
-           FROM users
-           WHERE id_number_hash = ?
-           LIMIT 1`,
+     FROM users
+     WHERE id_number_hash = ?
+     LIMIT 1`,
             [hashIdNumber(telephoneNumber, config.idPepper)],
           );
+
           user = rows[0];
+
+          if (user) {
+            const [roleRows] = await getPool().execute(
+              `SELECT role_code
+       FROM user_roles
+       WHERE user_id = ?`,
+              [user.id],
+            );
+
+            user.roles = roleRows.map((role) => role.role_code);
+          }
         } else if (config.allowDemoAuth) {
           user = findDemoUser(telephoneNumber, config.idPepper);
         }
