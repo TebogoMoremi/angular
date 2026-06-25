@@ -4,11 +4,17 @@ import { getConfig } from "./config.js";
 export function createAccessToken(user) {
   const config = getConfig();
 
-  return jwt.sign({
-    sub: String(user.id),
-    name: `${user.first_name} ${user.last_name}`,
-    roles: user.roles || [],
-  });
+  return jwt.sign(
+    {
+      sub: String(user.id),
+      name: `${user.firstName ?? user.first_name} ${user.lastName ?? user.last_name}`,
+      roles: user.roles || [],
+    },
+    config.jwtSecret,
+    {
+      expiresIn: "7d",
+    }
+  );
 }
 
 export function requireAuth(req, res, next) {
