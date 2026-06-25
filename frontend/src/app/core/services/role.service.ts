@@ -6,10 +6,10 @@ export type UserRole =
   | 'Member'
   | 'Pastor'
   | 'Bishop'
-  | 'Admin User'
+  | 'Service Provider Admin'
   | 'KZNCC User'
   | 'KZNCC Admin'
-  | 'Service Provider Admin'
+  | 'Admin User'
   | 'Service Provider User';
 
 export interface RoleMenuItem {
@@ -92,10 +92,10 @@ export class RoleService {
     'Member',
     'Pastor',
     'Bishop',
-    'Admin User',
+    'Service Provider Admin',
     'KZNCC User',
     'KZNCC Admin',
-    'Service Provider Admin',
+    'Admin User',
     'Service Provider User'
   ];
   private readonly defaultAssignments: Record<number, UserRole[]> = {
@@ -104,8 +104,8 @@ export class RoleService {
     3: ['Member', 'Bishop'],
     4: ['Member', 'KZNCC User'],
     5: ['Member', 'KZNCC Admin'],
-    6: ['Admin User'],
-    7: ['Service Provider Admin'],
+    6: ['Service Provider Admin'],
+    7: ['Admin User'],
     8: ['Service Provider User']
   };
   private readonly userRolesSubject = new BehaviorSubject<UserRole[]>(
